@@ -1,0 +1,20 @@
+{
+  "name": "blackout",
+  "mvp": {
+    "chains": ["ethereum", "arbitrum", "base", "optimism"],
+    "protocols": [
+      {
+        "id": "aave-v3",
+        "name": "Aave v3",
+        "kind": "lending",
+        "chains": ["ethereum", "arbitrum", "base", "optimism"]
+      },
+      {
+        "id": "compound-v3",
+        "name": "Compound v3",
+        "kind": "lending",
+        "chains": ["ethereum", "arbitrum", "base", "optimism"]
+      }
+    ]
+  }
+}
