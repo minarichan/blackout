@@ -1,6 +1,6 @@
 # Blackout
 
-Cross-chain lending risk for Aave v3 and Compound v3. Blackout reads collateral and debt on Ethereum, Arbitrum, Base, and Optimism, then shows which account is closest to liquidation.
+Cross-chain lending risk for Aave v3 and Compound v3. Blackout reads collateral and debt on Ethereum, Arbitrum, Base and Optimism, then shows which account is closest to liquidation.
 
 It is a risk desk, not a portfolio tracker. Health is calculated inside each lending account. Collateral is not shared across protocols or chains. The debt-weighted portfolio health factor is a summary and can hide one weak account. The worst health factor is the liquidation signal.
 
@@ -10,8 +10,8 @@ It is a risk desk, not a portfolio tracker. Health is calculated inside each len
 - **Collateral drawdown** is `(health − 1) / health`: how far the collateral basket can fall together before liquidation.
 - **Debt expansion** is `health − 1`: how far the debt basket can rise. A book that borrows ETH against stables is hurt by ETH going up.
 - **Isolated liquidation price** moves one asset and holds the others still.
-- **Stress** reprices ETH, BTC, alts, and a USDC depeg, then recomputes health. These are scenarios, not a full correlation model.
-- **Concentration** is the share of collateral or debt in one asset, chain, protocol, or factor bucket (ETH, BTC, stables).
+- **Stress** reprices ETH, BTC, alts and a USDC depeg, then recomputes health. These are scenarios, not a full correlation model.
+- **Concentration** is the share of collateral or debt in one asset, chain, protocol or factor bucket (ETH, BTC, stables).
 
 ## MVP coverage
 
