@@ -20,6 +20,12 @@ class ConcentrationOut(BaseModel):
     debt_by_protocol: list[SliceOut]
     debt_by_chain: list[SliceOut]
     debt_by_factor: list[SliceOut]
+    collateral_hhi: float = 0
+    debt_hhi: float = 0
+    collateral_top_key: str = ""
+    collateral_top_share: float = 0
+    debt_top_key: str = ""
+    debt_top_share: float = 0
 
 
 class PositionOut(BaseModel):

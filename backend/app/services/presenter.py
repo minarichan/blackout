@@ -156,6 +156,12 @@ def present(
             debt_by_protocol=_slices(concentration.debt_by_protocol),
             debt_by_chain=_slices(concentration.debt_by_chain),
             debt_by_factor=_slices(concentration.debt_by_factor),
+            collateral_hhi=required(concentration.collateral_hhi),
+            debt_hhi=required(concentration.debt_hhi),
+            collateral_top_key=concentration.collateral_top_key,
+            collateral_top_share=required(concentration.collateral_top_share),
+            debt_top_key=concentration.debt_top_key,
+            debt_top_share=required(concentration.debt_top_share),
         ),
         stress=[
             StressOut(

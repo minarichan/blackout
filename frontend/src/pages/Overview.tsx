@@ -92,12 +92,7 @@ export function Overview() {
       </div>
       <PositionsTable address={address} positions={positions} side={side} onSide={setSide} />
       <div className="bottom">
-        <ConcentrationChart
-          collateralFactors={portfolio.concentration.collateral_by_factor}
-          debtFactors={portfolio.concentration.debt_by_factor}
-          collateralAssets={portfolio.concentration.collateral_by_asset}
-          collateralChains={portfolio.concentration.collateral_by_chain}
-        />
+        <ConcentrationChart concentration={portfolio.concentration} />
         <StressPanel scenarios={portfolio.stress} />
       </div>
       {history.length > 0 ? (

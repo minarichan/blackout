@@ -137,6 +137,12 @@ export type Portfolio = {
     debt_by_protocol: Slice[];
     debt_by_chain: Slice[];
     debt_by_factor: Slice[];
+    collateral_hhi: number;
+    debt_hhi: number;
+    collateral_top_key: string;
+    collateral_top_share: number;
+    debt_top_key: string;
+    debt_top_share: number;
   };
   stress: StressScenario[];
   alerts: Alert[];

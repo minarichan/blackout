@@ -193,6 +193,112 @@ def test_demo_book_flags_the_tight_long_and_the_eth_borrow():
     assert "factor_concentration" in codes
 
 
+def test_single_name_book_has_hhi_of_one():
+    analysis = analyze(
+        build_aave_positions(
+            user="0xabc",
+            chain="ethereum",
+            reserves=[
+                ReserveState(
+                    address="0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2",
+                    symbol="WETH",
+                    decimals=18,
+                    ltv=D("0.80"),
+                    liquidation_threshold=D("0.80"),
+                    reserve_collateral_enabled=True,
+                    emode_category=0,
+                    supply_raw=10**18,
+                    stable_debt_raw=0,
+                    variable_debt_raw=0,
+                    usage_as_collateral=True,
+                    price_raw=2000 * 10**8,
+                ),
+                ReserveState(
+                    address="0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48",
+                    symbol="USDC",
+                    decimals=6,
+                    ltv=D("0"),
+                    liquidation_threshold=D("0"),
+                    reserve_collateral_enabled=False,
+                    emode_category=0,
+                    supply_raw=0,
+                    stable_debt_raw=0,
+                    variable_debt_raw=1000 * 10**6,
+                    usage_as_collateral=False,
+                    price_raw=10**8,
+                ),
+            ],
+            base_unit=10**8,
+            protocol_health=None,
+            protocol_liquidation_threshold=None,
+            emode=0,
+            emode_label="",
+            emode_ltv=None,
+            emode_liquidation_threshold=None,
+        )
+    )
+    book = analysis.concentration
+    assert book.collateral_hhi == D("1")
+    assert book.collateral_top_key == "WETH"
+    assert book.collateral_top_share == D("1")
+    assert book.debt_hhi == D("1")
+    assert book.debt_top_key == "USDC"
+    assert book.collateral_by_protocol[0].key == "Aave v3"
+    assert book.collateral_by_protocol[0].share == D("1")
+
+
+def test_even_split_collateral_hhi_is_one_half():
+    analysis = analyze(
+        build_aave_positions(
+            user="0xabc",
+            chain="ethereum",
+            reserves=[
+                ReserveState(
+                    address="0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2",
+                    symbol="WETH",
+                    decimals=18,
+                    ltv=D("0.80"),
+                    liquidation_threshold=D("0.80"),
+                    reserve_collateral_enabled=True,
+                    emode_category=0,
+                    supply_raw=10 * 10**18,
+                    stable_debt_raw=0,
+                    variable_debt_raw=0,
+                    usage_as_collateral=True,
+                    price_raw=2000 * 10**8,
+                ),
+                ReserveState(
+                    address="0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48",
+                    symbol="USDC",
+                    decimals=6,
+                    ltv=D("0.75"),
+                    liquidation_threshold=D("0.78"),
+                    reserve_collateral_enabled=True,
+                    emode_category=0,
+                    supply_raw=20_000 * 10**6,
+                    stable_debt_raw=0,
+                    variable_debt_raw=0,
+                    usage_as_collateral=True,
+                    price_raw=10**8,
+                ),
+            ],
+            base_unit=10**8,
+            protocol_health=None,
+            protocol_liquidation_threshold=None,
+            emode=0,
+            emode_label="",
+            emode_ltv=None,
+            emode_liquidation_threshold=None,
+        )
+    )
+    book = analysis.concentration
+    assert book.collateral_hhi == D("0.5")
+    assert book.collateral_top_share == D("0.5")
+    assert {row.key for row in book.collateral_by_asset} == {"WETH", "USDC"}
+    assert book.debt_hhi == D("0")
+    assert book.debt_top_key == ""
+
+
 def test_no_debt_has_no_health_factor():
     positions = demo_positions()
     idle = [position for position in positions if position.account_key == "base:aave-v3:core"]

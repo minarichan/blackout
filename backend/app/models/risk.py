@@ -22,6 +22,12 @@ class Concentration(BaseModel):
     debt_by_protocol: list[Slice]
     debt_by_chain: list[Slice]
     debt_by_factor: list[Slice]
+    collateral_hhi: Decimal = Decimal("0")
+    debt_hhi: Decimal = Decimal("0")
+    collateral_top_key: str = ""
+    collateral_top_share: Decimal = Decimal("0")
+    debt_top_key: str = ""
+    debt_top_share: Decimal = Decimal("0")
 
 
 class AccountRisk(BaseModel):

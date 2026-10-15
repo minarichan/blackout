@@ -284,6 +284,16 @@ def _slices(pairs: list[tuple[str, Decimal]]) -> list[Slice]:
     return rows
 
 
+def _hhi(rows: list[Slice]) -> Decimal:
+    return sum((row.share * row.share for row in rows), ZERO)
+
+
+def _top(rows: list[Slice]) -> tuple[str, Decimal]:
+    if not rows:
+        return "", ZERO
+    return rows[0].key, rows[0].share
+
+
 def _concentration(positions: list[Position]) -> Concentration:
     collaterals = [p for p in positions if p.type == "supply" and p.usage_as_collateral]
     debts = [p for p in positions if p.type == "borrow"]
@@ -298,6 +308,8 @@ def _concentration(positions: list[Position]) -> Concentration:
 
     collateral = pack(collaterals)
     debt = pack(debts)
+    collateral_top_key, collateral_top_share = _top(collateral["asset"])
+    debt_top_key, debt_top_share = _top(debt["asset"])
     return Concentration(
         collateral_by_asset=collateral["asset"],
         collateral_by_protocol=collateral["protocol"],
@@ -307,6 +319,12 @@ def _concentration(positions: list[Position]) -> Concentration:
         debt_by_protocol=debt["protocol"],
         debt_by_chain=debt["chain"],
         debt_by_factor=debt["factor"],
+        collateral_hhi=_hhi(collateral["asset"]),
+        debt_hhi=_hhi(debt["asset"]),
+        collateral_top_key=collateral_top_key,
+        collateral_top_share=collateral_top_share,
+        debt_top_key=debt_top_key,
+        debt_top_share=debt_top_share,
     )
 
 

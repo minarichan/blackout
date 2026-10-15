@@ -272,6 +272,16 @@ code, .num, .mono { font-family: "DM Mono", ui-monospace, monospace; }
   margin-bottom: 10px;
 }
 .panel-head h2 { margin: 0; }
+.seg { display: flex; gap: 6px; }
+.seg button {
+  border: 1px solid var(--line-strong);
+  background: #fff;
+  border-radius: 999px;
+  padding: 6px 12px;
+  font-weight: 700;
+}
+.seg button.active { background: var(--ink); color: #fff; border-color: var(--ink); }
+.score-line { margin: 0; font-size: 18px; font-weight: 800; letter-spacing: -0.03em; }
 
 .filters { display: flex; gap: 8px; flex-wrap: wrap; }
 .filters select {
