@@ -29,8 +29,11 @@ function Shell() {
     <div className="shell">
       <aside className="sidebar">
         <Link className="brand" to="/">
-          <strong>BLACKOUT</strong>
-          <span>Position & risk</span>
+          <span className="mark" aria-hidden="true" />
+          <span className="brand-copy">
+            <strong>Blackout</strong>
+            <span>Position & risk</span>
+          </span>
         </Link>
         <div className="side-block">
           <p className="side-label">Book</p>

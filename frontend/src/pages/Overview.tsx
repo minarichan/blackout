@@ -5,7 +5,7 @@ import { ConcentrationChart } from "../components/ConcentrationChart";
 import { PositionsTable } from "../components/PositionsTable";
 import { RiskSummary } from "../components/RiskSummary";
 import { StressPanel } from "../components/StressPanel";
-import { chainLabel, when } from "../format";
+import { chainLabel, shortAddress, when } from "../format";
 import { usePortfolio } from "../hooks/usePortfolio";
 
 export function Overview() {
@@ -71,7 +71,7 @@ export function Overview() {
           {portfolio.ingestion.map((item) => (
             <span
               key={`${item.chain}-${item.protocol}`}
-              className={`chip ${item.ok ? (item.warning ? "warn" : "ok") : "bad"}`}
+              className={`chip chain-${item.chain} ${item.ok ? (item.warning ? "warn" : "ok") : "bad"}`}
               title={item.error || item.warning || ""}
             >
               {chainLabel(item.chain)} {item.protocol === "aave-v3" ? "Aave" : "Compound"} · {item.position_count}
@@ -80,6 +80,10 @@ export function Overview() {
           <span className="chip">{loading ? "Refreshing…" : `Read ${when(portfolio.fetched_at)}`}</span>
         </div>
       ) : null}
+      <header className="book-head">
+        <p className="kicker">Cross-chain book</p>
+        <h1>{address === "demo" ? "Demo book" : shortAddress(address)}</h1>
+      </header>
       <RiskSummary summary={portfolio.summary} />
       <p className="method">{portfolio.methodology}</p>
       <div className="split">

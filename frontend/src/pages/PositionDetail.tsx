@@ -28,10 +28,10 @@ export function PositionDetail() {
       <Link className="back" to={`/book/${encodeURIComponent(address)}`}>
         Back to book
       </Link>
-      <h1 style={{ marginBottom: 4 }}>
+      <h1 className="detail-title">
         {position.asset} {position.type === "borrow" ? "borrow" : "supply"}
       </h1>
-      <p className="muted">
+      <p className="identity">
         {position.chain_name} · {position.market_name} · {position.asset_address}
       </p>
       <div className="detail-grid">
