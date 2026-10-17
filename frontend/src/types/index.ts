@@ -31,6 +31,9 @@ export type Position = {
   distance_to_liquidation_usd: number | null;
   entry_price: number | null;
   price_source: string;
+  reference_price_usd: number | null;
+  price_gap: number | null;
+  price_status: "protocol" | "fallback" | "divergent" | "unpriced";
   metadata: Record<string, string | number | boolean | null>;
 };
 

@@ -53,6 +53,9 @@ class PositionOut(BaseModel):
     distance_to_liquidation_usd: float | None = None
     entry_price: float | None = None
     price_source: str
+    reference_price_usd: float | None = None
+    price_gap: float | None = None
+    price_status: str = "protocol"
     metadata: dict[str, Any] = Field(default_factory=dict)
 
 

@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom";
 import type { Position } from "../types";
-import { amount, chainLabel, distanceClass, hf, pct, price, riskClass, usd } from "../format";
+import { amount, chainLabel, distanceClass, hf, pct, price, priceStatusLabel, riskClass, usd } from "../format";
 
 export function PositionsTable({
   address,
@@ -53,7 +53,12 @@ export function PositionsTable({
                     <Link to={`/book/${encodeURIComponent(address)}/position/${encodeURIComponent(position.id)}`}>
                       {position.asset}{" "}
                       <span className={`tag ${position.type}`}>{position.type === "borrow" ? "BORROW" : "SUPPLY"}</span>
-                      <span className="sub">{price(position.price_usd)}</span>
+                      <span className="sub">
+                        {price(position.price_usd)}
+                        {position.price_status !== "protocol" ? (
+                          <span className={`tag ${position.price_status}`}>{priceStatusLabel(position.price_status)}</span>
+                        ) : null}
+                      </span>
                     </Link>
                   </td>
                   <td>

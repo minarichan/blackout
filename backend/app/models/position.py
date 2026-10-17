@@ -30,4 +30,7 @@ class Position(BaseModel):
     distance_to_liquidation_usd: Decimal | None = None
     entry_price: Decimal | None = None
     price_source: str = "protocol_oracle"
+    reference_price_usd: Decimal | None = None
+    price_gap: Decimal | None = None
+    price_status: Literal["protocol", "fallback", "divergent", "unpriced"] = "protocol"
     metadata: dict[str, Any] = Field(default_factory=dict)

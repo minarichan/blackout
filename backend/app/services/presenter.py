@@ -116,6 +116,9 @@ def present(
                 distance_to_liquidation_usd=num(position.distance_to_liquidation_usd),
                 entry_price=num(position.entry_price),
                 price_source=position.price_source,
+                reference_price_usd=num(position.reference_price_usd),
+                price_gap=num(position.price_gap),
+                price_status=position.price_status,
                 metadata=_jsonish(position.metadata),
             )
             for position in analysis.positions

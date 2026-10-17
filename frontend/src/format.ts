@@ -32,6 +32,44 @@ export function pct(value: number | null | undefined): string {
   return `${(value * 100).toFixed(1)}%`;
 }
 
+export function signedPct(value: number | null | undefined): string {
+  if (value === null || value === undefined || Number.isNaN(value)) return "—";
+  const text = pct(Math.abs(value));
+  if (value > 0) return `+${text}`;
+  if (value < 0) return `-${text}`;
+  return text;
+}
+
+export function priceSourceLabel(value: string): string {
+  switch (value) {
+    case "aave_oracle":
+      return "Aave oracle";
+    case "compound_oracle":
+      return "Compound oracle";
+    case "chainlink":
+      return "Chainlink";
+    case "coingecko":
+      return "CoinGecko";
+    case "demo":
+      return "Fixture";
+    default:
+      return value;
+  }
+}
+
+export function priceStatusLabel(value: string): string {
+  switch (value) {
+    case "fallback":
+      return "Fallback";
+    case "divergent":
+      return "Divergent";
+    case "unpriced":
+      return "Unpriced";
+    default:
+      return "Protocol";
+  }
+}
+
 export function amount(value: number): string {
   if (!Number.isFinite(value)) return "—";
   const abs = Math.abs(value);

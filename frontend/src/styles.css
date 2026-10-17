@@ -332,6 +332,9 @@ td.num, th.num { text-align: right; font-variant-numeric: tabular-nums; }
 }
 .tag.borrow { color: #9a3412; background: #ffe4d4; }
 .tag.supply { color: #1e3a8a; background: #e3edff; }
+.tag.fallback { color: #8a4b00; background: #fff1c9; margin-left: 6px; }
+.tag.divergent { color: #9f1239; background: #ffd5e2; margin-left: 6px; }
+.tag.unpriced { color: #3b2a6b; background: #efe4ff; margin-left: 6px; }
 
 .alerts { display: flex; flex-direction: column; gap: 8px; max-height: 420px; overflow: auto; }
 .alert {

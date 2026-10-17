@@ -1,6 +1,26 @@
 import { Link, useParams } from "react-router-dom";
-import { amount, hf, pct, price, primaryRiskLabel, riskClass, usd } from "../format";
+import { amount, hf, pct, price, priceSourceLabel, priceStatusLabel, primaryRiskLabel, riskClass, signedPct, usd } from "../format";
+import type { Position } from "../types";
 import { usePortfolio } from "../hooks/usePortfolio";
+
+function priceNote(position: Position): string {
+  if (position.price_source === "demo") {
+    return "Fixture price. The demo book does not query Chainlink or CoinGecko.";
+  }
+  if (position.price_status === "fallback") {
+    return `${priceSourceLabel(position.price_source)} filled a missing protocol price. Account health and liquidation distance include this substitute.`;
+  }
+  if (position.price_status === "divergent") {
+    return "The protocol oracle disagrees with the reference. Liquidation math still uses the protocol price, because that is the figure liquidations use.";
+  }
+  if (position.price_status === "unpriced") {
+    return "No protocol price and no reference. This leg is left out of dollar value, so the account health is incomplete.";
+  }
+  if (position.reference_price_usd === null) {
+    return "No independent reference for this asset. Liquid staking tokens are not checked against spot ETH.";
+  }
+  return "The protocol oracle is inside the reference band. Health uses that oracle.";
+}
 
 export function PositionDetail() {
   const params = useParams();
@@ -45,7 +65,10 @@ export function PositionDetail() {
         <article className="kpi">
           <span className="label">Account health</span>
           <span className={`value num ${riskClass(position.health_factor)}`}>{hf(position.health_factor)}</span>
-          <span className="hint">{account ? primaryRiskLabel(account.primary_risk) : "Account"}</span>
+          <span className="hint">
+            {account ? primaryRiskLabel(account.primary_risk) : "Account"}
+            {position.price_status === "fallback" ? " · uses a fallback price" : ""}
+          </span>
         </article>
         <article className="kpi">
           <span className="label">Isolated distance</span>
@@ -63,10 +86,36 @@ export function PositionDetail() {
         </article>
       </div>
       <section className="panel">
+        <h2>Price</h2>
+        <div className="detail-grid">
+          <article className="kpi">
+            <span className="label">Used for health</span>
+            <span className="value num">{price(position.price_usd)}</span>
+            <span className="hint">
+              {priceSourceLabel(position.price_source)}
+              {position.price_status !== "protocol" ? ` · ${priceStatusLabel(position.price_status)}` : ""}
+            </span>
+          </article>
+          <article className="kpi">
+            <span className="label">Reference</span>
+            <span className="value num">{position.reference_price_usd === null ? "—" : price(position.reference_price_usd)}</span>
+            <span className="hint">{position.price_source === "demo" ? "Fixture book" : "Chainlink or $1 peg"}</span>
+          </article>
+          <article className="kpi">
+            <span className="label">Gap</span>
+            <span className={`value num ${position.price_status === "divergent" ? "high" : ""}`}>
+              {signedPct(position.price_gap)}
+            </span>
+            <span className="hint">Protocol minus reference</span>
+          </article>
+        </div>
+        <p className="method">{priceNote(position)}</p>
+      </section>
+      <section className="panel">
         <h2>Same account</h2>
         <p className="method">
           Liquidation price assumes every other price in this account stays put. Health is shared by the whole
-          account. Protocol price source: {position.price_source}.
+          account.
         </p>
         <div className="table-wrap">
           <table>
