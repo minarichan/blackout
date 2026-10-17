@@ -1,31 +1,34 @@
 # Blackout
 
-Cross-chain lending risk for Aave v3 and Compound v3. Blackout reads collateral and debt on Ethereum, Arbitrum, Base and Optimism, then shows which account is closest to liquidation.
+Blackout is a small risk desk for lending books spread across chains.
 
-It is a risk desk, not a portfolio tracker. Health is calculated inside each lending account. Collateral is not shared across protocols or chains. The debt-weighted portfolio health factor is a summary and can hide one weak account. The worst health factor is the liquidation signal.
+Paste a wallet. It reads Aave v3 and Compound v3 on Ethereum, Arbitrum, Base, and Optimism, then tells you which account is closest to getting liquidated. Balances are there, but they are not the point. The point is health, how far the book is from a liquidation, and whether one asset, one chain, or one protocol is carrying too much of it.
 
-## What the numbers mean
+Collateral in one account does not back debt in another. Aave on Arbitrum and Compound on Base are separate. Because of that, a single portfolio health factor can look fine while one account is close to the edge. Blackout leads with the worst account.
 
-- **Health factor** is `sum(collateral value × liquidation threshold) / debt`. Under 1.0 is liquidatable. Aave's own health factor is the headline when the protocol reports one, because that is the figure liquidations use.
-- **Collateral drawdown** is `(health − 1) / health`: how far the collateral basket can fall together before liquidation.
-- **Debt expansion** is `health − 1`: how far the debt basket can rise. A book that borrows ETH against stables is hurt by ETH going up.
-- **Isolated liquidation price** moves one asset and holds the others still.
-- **Stress** reprices ETH, BTC, alts and a USDC depeg, then recomputes health. These are scenarios, not a full correlation model.
-- **Concentration** is the share of collateral or debt in one asset, chain, protocol or factor bucket (ETH, BTC, stables).
+There is a demo book if you want to click around before pointing it at a real wallet. The positions are made up. The math is the same math a live wallet goes through.
 
-## MVP coverage
+## How to read the screen
 
-| | |
-| --- | --- |
-| Chains | Ethereum, Arbitrum, Base, Optimism |
-| Protocols | Aave v3 core markets, Compound v3 base-asset markets |
-| Not in this version | Perps margin, restaking, ML correlation, wallet-signature auth |
+Health is collateral value times each asset's liquidation threshold, divided by debt. Under 1.0, the account can be liquidated. When Aave reports its own health factor, that number is the one on screen, because that is the number liquidations actually use.
 
-The demo book is a fixture. It runs through the same risk engine as a live wallet so the dashboard can be reviewed without RPC access.
+Two distances sit next to health, and they are not the same thing. Collateral drawdown is how far the collateral basket can fall together before liquidation: `(health − 1) / health`. Debt expansion is how far the debt basket can rise: `health − 1`. Borrowing ETH against stables gets worse when ETH goes up. Posting ETH and borrowing stables gets worse when ETH goes down.
 
-## Run locally
+The liquidation price on a single row moves only that asset and holds the rest still. Stress is a handful of set scenarios — ETH down 15% and 20%, ETH up 20%, BTC down 20%, a broader selloff, and a small USDC depeg. They are what-ifs, not a correlation model.
 
-Python 3.12 and Node 20+ are enough. SQLite is the default database. Redis is not required.
+Concentration is the share of collateral or debt in one asset, one protocol, one chain, or one factor (ETH, BTC, stables, and so on). HHI squashes the asset shares into one number. 1.00 means the whole side is a single name.
+
+Prices need a second look. The protocol oracle is what health and liquidation use. Chainlink (ETH and BTC, on Ethereum) and a one-dollar peg for stables are only a reference. If they disagree, the row is marked divergent and the protocol price stays. If the oracle is missing, Chainlink or CoinGecko can fill the gap, and the row is marked fallback so you can see that health is leaning on a substitute. A Chainlink round older than a day is ignored. Staked ETH is not compared with spot ETH, because the premium would look like a broken oracle.
+
+## What it covers right now
+
+Ethereum, Arbitrum, Base, and Optimism. Aave v3 core markets and Compound v3 base-asset markets.
+
+Perps, restaking, and wallet login are not in this version. Nothing here sends a transaction. It only reads.
+
+## Run it
+
+You need Python 3.12 and Node 20 or newer. The database is SQLite. You do not need Redis.
 
 ```powershell
 cd backend
@@ -39,36 +42,34 @@ npm install
 npm run dev
 ```
 
-Open http://127.0.0.1:5173 and load the demo book, or paste a wallet that has Aave v3 or Compound v3 positions.
+Open http://127.0.0.1:5173. Load the demo book, or paste a wallet that actually has Aave or Compound positions. The API docs live at http://127.0.0.1:8000/docs. `scripts/run_local.ps1` starts both processes.
 
-`scripts/run_local.ps1` starts both processes. API docs are at http://127.0.0.1:8000/docs.
+Public RPCs are filled in already, which is fine for trying it. The first live read often takes 10–30 seconds. If you leave it running, put your own endpoints in `.env`. There is an example in `.env.example`.
 
-Public RPCs are configured by default. For a deployment, set your own endpoints in `.env` (see `.env.example`). The first live read can take 10–30 seconds.
-
-## Docker
+Docker is the other way:
 
 ```powershell
 docker compose up --build
 ```
 
-The app is published on http://localhost:8080. The API is on http://localhost:8000.
+The desk is on http://localhost:8080 and the API is on http://localhost:8000.
 
 ## API
 
+`demo` works anywhere an address does. `?refresh=true` skips the short cache.
+
 | Method | Path | |
 | --- | --- | --- |
-| GET | `/health` | Process health. Does not probe RPCs. |
-| GET | `/protocols` | Chains and markets enabled in this process. |
-| GET | `/portfolio/{address}` | Positions, account risk, concentration, stress, and alerts. |
-| GET | `/portfolio/{address}/positions` | Normalized positions. |
+| GET | `/health` | Process is up. This does not call the chains. |
+| GET | `/protocols` | Chains and markets this process will read. |
+| GET | `/portfolio/{address}` | Positions, health, concentration, stress, alerts. |
+| GET | `/portfolio/{address}/positions` | The normalized positions. |
 | GET | `/portfolio/{address}/risk` | Health, concentration, and stress. |
-| GET | `/portfolio/{address}/alerts` | Threshold and correlation alerts. |
-| GET | `/portfolio/{address}/history` | Recent risk snapshots. |
+| GET | `/portfolio/{address}/alerts` | What crossed a threshold. |
+| GET | `/portfolio/{address}/history` | Recent snapshots for this address. |
 | POST | `/watchlist` | Save an address. Body: `{ "address", "label" }`. |
 | GET | `/watchlist` | Saved addresses. |
-| DELETE | `/watchlist/{address}` | Remove an address. |
-
-Use `demo` as the address for the fixture book. Add `?refresh=true` to skip the short response cache.
+| DELETE | `/watchlist/{address}` | Remove one. |
 
 ## Tests
 
@@ -77,15 +78,8 @@ cd backend
 python -m pytest
 ```
 
-Risk math is covered without a network. `scripts/smoke_rpc.py` checks that the configured RPCs can read Aave reserve lists and Compound base tokens.
+The risk and price tests do not need a network. `scripts/smoke_rpc.py` checks that the configured RPCs can still see Aave reserve lists and Compound base tokens.
 
-## Layout
+## Where things live
 
-```
-backend/app/adapters    Aave v3, Compound v3, Chainlink, CoinGecko
-backend/app/core        Health, distance, concentration, stress, alerts
-backend/app/api         REST routes
-frontend/src            Risk dashboard
-```
-
-Protocol oracle prices are what liquidation uses. Chainlink (ETH and BTC on Ethereum) and CoinGecko only fill a missing price or flag a divergence. They do not replace the protocol price.
+`backend/app/adapters` talks to Aave, Compound, Chainlink, and CoinGecko. `backend/app/core` is the health, distance, concentration, stress, and alert math. `backend/app/api` is the HTTP surface. `frontend/src` is the desk.
