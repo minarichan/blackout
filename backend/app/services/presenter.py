@@ -3,10 +3,12 @@ from __future__ import annotations
 from decimal import Decimal
 from typing import Any
 
-from app.models.risk import Alert, Analysis, Slice
+from app.core.actions import suggest_action
+from app.models.risk import Alert, Analysis, Slice, SuggestedAction
 from app.models.schemas import (
     AccountOut,
     AlertOut,
+    ActionOut,
     ConcentrationOut,
     IngestionOut,
     PortfolioOut,
@@ -47,6 +49,29 @@ def _jsonish(value: Any) -> Any:
 
 def _slices(rows: list[Slice]) -> list[SliceOut]:
     return [SliceOut(key=row.key, value_usd=required(row.value_usd), share=required(row.share)) for row in rows]
+
+
+def _action(action: SuggestedAction | None) -> ActionOut | None:
+    if action is None:
+        return None
+    return ActionOut(
+        kind=action.kind,
+        account_key=action.account_key,
+        chain=action.chain,
+        protocol_name=action.protocol_name,
+        market_name=action.market_name,
+        asset=action.asset,
+        amount=required(action.amount),
+        amount_usd=required(action.amount_usd),
+        target_health=required(action.target_health),
+        health_before=required(action.health_before),
+        health_after=num(action.health_after),
+        worst_before=required(action.worst_before),
+        worst_after=num(action.worst_after),
+        worst_after_account_key=action.worst_after_account_key,
+        worst_after_chain=action.worst_after_chain,
+        worst_after_market_name=action.worst_after_market_name,
+    )
 
 
 def _chain_name(chain: str) -> str:
@@ -189,6 +214,7 @@ def present(
             )
             for scenario in analysis.stress
         ],
+        action=_action(suggest_action(analysis)),
         alerts=[
             AlertOut(
                 id=alert.id,

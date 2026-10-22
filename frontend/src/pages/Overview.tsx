@@ -1,4 +1,5 @@
 import { useMemo, useState } from "react";
+import { ActionPanel } from "../components/ActionPanel";
 import { AccountsPanel } from "../components/AccountsPanel";
 import { AlertsPanel } from "../components/AlertsPanel";
 import { ConcentrationChart } from "../components/ConcentrationChart";
@@ -86,6 +87,7 @@ export function Overview() {
       </header>
       <RiskSummary summary={portfolio.summary} />
       <p className="method">{portfolio.methodology}</p>
+      <ActionPanel action={portfolio.action} />
       <div className="split">
         <AccountsPanel accounts={portfolio.accounts} selected={accountKey} onSelect={setAccountKey} />
         <AlertsPanel alerts={portfolio.alerts} />

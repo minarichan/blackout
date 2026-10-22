@@ -121,6 +121,25 @@ export type Summary = {
   alert_count: number;
 };
 
+export type SuggestedAction = {
+  kind: "repay";
+  account_key: string;
+  chain: string;
+  protocol_name: string;
+  market_name: string;
+  asset: string;
+  amount: number;
+  amount_usd: number;
+  target_health: number;
+  health_before: number;
+  health_after: number | null;
+  worst_before: number;
+  worst_after: number | null;
+  worst_after_account_key: string | null;
+  worst_after_chain: string | null;
+  worst_after_market_name: string | null;
+};
+
 export type Portfolio = {
   address: string;
   demo: boolean;
@@ -149,6 +168,7 @@ export type Portfolio = {
   };
   stress: StressScenario[];
   alerts: Alert[];
+  action: SuggestedAction | null;
   ingestion: Ingestion[];
 };
 

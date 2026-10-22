@@ -74,6 +74,25 @@ class StressScenario(BaseModel):
     accounts: list[StressAccount]
 
 
+class SuggestedAction(BaseModel):
+    kind: str
+    account_key: str
+    chain: str
+    protocol_name: str
+    market_name: str
+    asset: str
+    amount: Decimal
+    amount_usd: Decimal
+    target_health: Decimal
+    health_before: Decimal
+    health_after: Decimal | None
+    worst_before: Decimal
+    worst_after: Decimal | None
+    worst_after_account_key: str | None = None
+    worst_after_chain: str | None = None
+    worst_after_market_name: str | None = None
+
+
 class Alert(BaseModel):
     id: str
     severity: str

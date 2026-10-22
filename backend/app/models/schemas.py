@@ -104,6 +104,25 @@ class StressOut(BaseModel):
     accounts: list[StressAccountOut]
 
 
+class ActionOut(BaseModel):
+    kind: str
+    account_key: str
+    chain: str
+    protocol_name: str
+    market_name: str
+    asset: str
+    amount: float
+    amount_usd: float
+    target_health: float
+    health_before: float
+    health_after: float | None = None
+    worst_before: float
+    worst_after: float | None = None
+    worst_after_account_key: str | None = None
+    worst_after_chain: str | None = None
+    worst_after_market_name: str | None = None
+
+
 class AlertOut(BaseModel):
     id: str
     severity: str
@@ -156,6 +175,7 @@ class PortfolioOut(BaseModel):
     concentration: ConcentrationOut
     stress: list[StressOut]
     alerts: list[AlertOut]
+    action: ActionOut | None = None
     ingestion: list[IngestionOut]
 
 

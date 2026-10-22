@@ -282,6 +282,8 @@ code, .num, .mono { font-family: "DM Mono", ui-monospace, monospace; }
 }
 .seg button.active { background: var(--ink); color: #fff; border-color: var(--ink); }
 .score-line { margin: 0; font-size: 18px; font-weight: 800; letter-spacing: -0.03em; }
+.action .method { margin: 8px 0 0; }
+.action .tag { background: #fff; }
 
 .filters { display: flex; gap: 8px; flex-wrap: wrap; }
 .filters select {
