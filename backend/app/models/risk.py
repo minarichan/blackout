@@ -74,6 +74,19 @@ class StressScenario(BaseModel):
     accounts: list[StressAccount]
 
 
+class ActionQuote(BaseModel):
+    status: str
+    slippage_bps: int
+    wallet_balance: Decimal | None = None
+    shortfall: Decimal | None = None
+    gas_units: int | None = None
+    gas_native: Decimal | None = None
+    gas_usd: Decimal | None = None
+    health_after: Decimal | None = None
+    expires_at: str
+    note: str
+
+
 class SuggestedAction(BaseModel):
     kind: str
     account_key: str
@@ -91,6 +104,7 @@ class SuggestedAction(BaseModel):
     worst_after_account_key: str | None = None
     worst_after_chain: str | None = None
     worst_after_market_name: str | None = None
+    quote: ActionQuote | None = None
 
 
 class Alert(BaseModel):

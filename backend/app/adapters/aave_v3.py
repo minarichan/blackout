@@ -89,13 +89,13 @@ def build_aave_positions(
                     ltv=ltv,
                     threshold=threshold,
                     collateral=reserve.usage_as_collateral and threshold > ZERO,
-                    metadata=shared,
+                    metadata={**shared, "decimals": str(reserve.decimals)},
                 )
             )
         debt_raw = reserve.stable_debt_raw + reserve.variable_debt_raw
         if debt_raw > 0:
             amount = Decimal(debt_raw) / scale
-            meta = dict(shared)
+            meta = {**shared, "decimals": str(reserve.decimals)}
             if reserve.stable_debt_raw:
                 meta["stable_debt"] = format(Decimal(reserve.stable_debt_raw) / scale, "f")
             if reserve.variable_debt_raw:

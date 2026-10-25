@@ -121,6 +121,19 @@ export type Summary = {
   alert_count: number;
 };
 
+export type ActionQuote = {
+  status: "ready" | "short" | "approval" | "unavailable";
+  slippage_bps: number;
+  wallet_balance: number | null;
+  shortfall: number | null;
+  gas_units: number | null;
+  gas_native: number | null;
+  gas_usd: number | null;
+  health_after: number | null;
+  expires_at: string;
+  note: string;
+};
+
 export type SuggestedAction = {
   kind: "repay";
   account_key: string;
@@ -138,6 +151,7 @@ export type SuggestedAction = {
   worst_after_account_key: string | null;
   worst_after_chain: string | null;
   worst_after_market_name: string | null;
+  quote: ActionQuote | null;
 };
 
 export type Portfolio = {

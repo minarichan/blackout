@@ -11,8 +11,10 @@ from app.adapters.base import AdapterResult
 from app.adapters.compound_v3 import CompoundV3Adapter
 from app.adapters.prices import PriceService
 from app.config import Settings
+from app.core.actions import suggest_action
 from app.core.alerts import build_alerts
 from app.core.normalizer import clean
+from app.core.quotes import assemble_quote, native_price
 from app.core.risk_engine import analyze
 from app.db.models import Snapshot, WatchItem
 from app.db.session import session_scope
@@ -22,6 +24,7 @@ from app.registry import chain_configs
 from app.services.cache import RateLimiter, TtlCache
 from app.services.ingestion import IngestionService, build_rpcs
 from app.services.presenter import present
+from app.services.quoter import RepayQuoter
 
 logger = logging.getLogger("blackout.portfolio")
 
@@ -58,6 +61,7 @@ class PortfolioService:
         self.compound = CompoundV3Adapter(self.rpcs, settings.metadata_ttl_seconds)
         self.ingestion = IngestionService(self.chains, self.aave, self.compound)
         self.prices = PriceService(self.rpcs.get("ethereum"), settings.coingecko_api_key)
+        self.quoter = RepayQuoter(self.rpcs)
         self.cache = TtlCache()
         self.limiter = RateLimiter(settings.rate_limit_per_minute)
 
@@ -98,6 +102,7 @@ class PortfolioService:
         positions = clean(positions, self.settings.min_position_value)
         analysis = analyze(positions)
         alerts = build_alerts(analysis, extra_alerts)
+        quote = await self._quote(analysis, positions, normalized, demo, started)
         elapsed_ms = int((datetime.now(timezone.utc).timestamp() - timer) * 1000)
         book = present(
             address=normalized,
@@ -108,11 +113,24 @@ class PortfolioService:
             analysis=analysis,
             alerts=alerts,
             ingestion=ingestion,
+            quote=quote,
         )
         self.cache.set(cache_key, book, self.settings.cache_ttl_seconds)
         if quality != "unavailable":
             self._snapshot(book)
         return book.model_copy(deep=True)
+
+    async def _quote(self, analysis, positions, address: str, demo: bool, now: datetime):
+        action = suggest_action(analysis)
+        if action is None:
+            return None
+        if demo:
+            return assemble_quote(action, now=now, balance=0, demo=True)
+        try:
+            return await self.quoter.quote(action, positions, address, native_price(positions), now)
+        except Exception:
+            logger.warning("repay quote failed", exc_info=True)
+            return assemble_quote(action, now=now, balance=None, readable=False)
 
     def history(self, address: str) -> list[SnapshotOut]:
         normalized = normalize_address(address)

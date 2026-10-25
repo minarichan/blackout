@@ -104,6 +104,19 @@ class StressOut(BaseModel):
     accounts: list[StressAccountOut]
 
 
+class QuoteOut(BaseModel):
+    status: str
+    slippage_bps: int
+    wallet_balance: float | None = None
+    shortfall: float | None = None
+    gas_units: int | None = None
+    gas_native: float | None = None
+    gas_usd: float | None = None
+    health_after: float | None = None
+    expires_at: str
+    note: str
+
+
 class ActionOut(BaseModel):
     kind: str
     account_key: str
@@ -121,6 +134,7 @@ class ActionOut(BaseModel):
     worst_after_account_key: str | None = None
     worst_after_chain: str | None = None
     worst_after_market_name: str | None = None
+    quote: QuoteOut | None = None
 
 
 class AlertOut(BaseModel):

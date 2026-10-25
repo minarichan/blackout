@@ -35,6 +35,12 @@ def test_demo_portfolio_and_history(client):
     assert body["data_quality"] == "demo"
     assert body["summary"]["worst_account_key"] == "arbitrum:aave-v3:core"
     assert body["summary"]["worst_health_factor"] == pytest.approx(1.1)
+    quote = body["action"]["quote"]
+    assert quote["status"] == "short"
+    assert quote["slippage_bps"] == 0
+    assert quote["gas_units"] is None
+    assert quote["shortfall"] == pytest.approx(16000)
+    assert "not a wallet" in quote["note"]
     assert body["positions"]
     assert any(alert["code"] == "health_high" for alert in body["alerts"])
 

@@ -4,7 +4,7 @@ from decimal import Decimal
 from typing import Any
 
 from app.core.actions import suggest_action
-from app.models.risk import Alert, Analysis, Slice, SuggestedAction
+from app.models.risk import ActionQuote, Alert, Analysis, Slice, SuggestedAction
 from app.models.schemas import (
     AccountOut,
     AlertOut,
@@ -13,6 +13,7 @@ from app.models.schemas import (
     IngestionOut,
     PortfolioOut,
     PositionOut,
+    QuoteOut,
     SliceOut,
     StressAccountOut,
     StressOut,
@@ -71,6 +72,24 @@ def _action(action: SuggestedAction | None) -> ActionOut | None:
         worst_after_account_key=action.worst_after_account_key,
         worst_after_chain=action.worst_after_chain,
         worst_after_market_name=action.worst_after_market_name,
+        quote=_quote(action.quote),
+    )
+
+
+def _quote(quote: ActionQuote | None) -> QuoteOut | None:
+    if quote is None:
+        return None
+    return QuoteOut(
+        status=quote.status,
+        slippage_bps=quote.slippage_bps,
+        wallet_balance=num(quote.wallet_balance),
+        shortfall=num(quote.shortfall),
+        gas_units=quote.gas_units,
+        gas_native=num(quote.gas_native),
+        gas_usd=num(quote.gas_usd),
+        health_after=num(quote.health_after),
+        expires_at=quote.expires_at,
+        note=quote.note,
     )
 
 
@@ -89,9 +108,13 @@ def present(
     analysis: Analysis,
     alerts: list[Alert],
     ingestion: list[IngestionOut],
+    quote: ActionQuote | None = None,
 ) -> PortfolioOut:
     worst = next((account for account in analysis.accounts if account.account_key == analysis.worst_account_key), None)
     concentration = analysis.concentration
+    action = suggest_action(analysis)
+    if action is not None and quote is not None:
+        action = action.model_copy(update={"quote": quote})
     return PortfolioOut(
         address=address,
         demo=demo,
@@ -214,7 +237,7 @@ def present(
             )
             for scenario in analysis.stress
         ],
-        action=_action(suggest_action(analysis)),
+        action=_action(action),
         alerts=[
             AlertOut(
                 id=alert.id,

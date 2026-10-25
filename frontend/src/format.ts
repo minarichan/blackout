@@ -70,6 +70,18 @@ export function priceStatusLabel(value: string): string {
   }
 }
 
+export function eth(value: number | null | undefined): string {
+  if (value === null || value === undefined || Number.isNaN(value)) return "—";
+  if (value === 0) return "0 ETH";
+  if (value < 0.0001) return `${value.toExponential(2)} ETH`;
+  return `${value.toLocaleString("en-US", { maximumFractionDigits: 6 })} ETH`;
+}
+
+export function gasUnits(value: number | null | undefined): string {
+  if (value === null || value === undefined || Number.isNaN(value)) return "—";
+  return value.toLocaleString("en-US", { maximumFractionDigits: 0 });
+}
+
 export function amount(value: number): string {
   if (!Number.isFinite(value)) return "—";
   const abs = Math.abs(value);

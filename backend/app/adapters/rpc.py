@@ -67,6 +67,37 @@ class ChainRpc:
                     logger.warning("%s call via %s failed: %s", self.name, _host(url), _short(exc))
         raise RpcError(f"{self.name} RPC failed: {_short(last)}")
 
+    async def gas_price(self) -> int:
+        if not self.urls:
+            raise RpcError(f"{self.name} has no RPC URL")
+        last: Exception | None = None
+        async with self.gate:
+            for url in self.urls:
+                try:
+                    client = self._client(url)
+                    price = await asyncio.wait_for(client.eth.gas_price, timeout=self.timeout + 2)
+                    return int(price)
+                except Exception as exc:
+                    last = exc
+                    logger.warning("%s gas price via %s failed: %s", self.name, _host(url), _short(exc))
+        raise RpcError(f"{self.name} gas price failed: {_short(last)}")
+
+    async def estimate_gas(self, tx: dict) -> int:
+        """Simulate gas for a transaction. This does not broadcast it."""
+        if not self.urls:
+            raise RpcError(f"{self.name} has no RPC URL")
+        last: Exception | None = None
+        async with self.gate:
+            for url in self.urls:
+                try:
+                    client = self._client(url)
+                    estimate = await asyncio.wait_for(client.eth.estimate_gas(tx), timeout=self.timeout + 2)
+                    return int(estimate)
+                except Exception as exc:
+                    last = exc
+                    logger.warning("%s gas estimate via %s failed: %s", self.name, _host(url), _short(exc))
+        raise RpcError(f"{self.name} gas estimate failed: {_short(last)}")
+
     async def multicall(self, calls: list[tuple[str, bytes]], chunk: int = 12) -> list[tuple[bool, bytes]]:
         if not calls:
             return []

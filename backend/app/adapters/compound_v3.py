@@ -260,6 +260,7 @@ class CompoundV3Adapter:
                     collateral=False,
                     ltv=None,
                     threshold=None,
+                    decimals=_decimals(meta.base_scale),
                 )
             )
         for item in held:
@@ -282,6 +283,7 @@ class CompoundV3Adapter:
                     collateral=collateral,
                     ltv=item.borrow_factor if collateral else None,
                     threshold=item.liquidate_factor if collateral else None,
+                    decimals=_decimals(item.scale),
                 )
             )
         return positions
@@ -301,6 +303,7 @@ class CompoundV3Adapter:
         collateral: bool,
         ltv: Decimal | None,
         threshold: Decimal | None,
+        decimals: int,
     ) -> Position:
         market_id = meta.market.market_id
         return Position(
@@ -322,8 +325,14 @@ class CompoundV3Adapter:
             liquidation_threshold=threshold,
             usage_as_collateral=collateral,
             price_source="compound_oracle",
-            metadata={},
+            metadata={"decimals": str(decimals)},
         )
+
+
+def _decimals(scale: int) -> int:
+    if scale <= 1:
+        return 0
+    return len(str(scale)) - 1
 
 
 def _elapsed(started: float) -> int:
