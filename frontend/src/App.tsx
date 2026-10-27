@@ -1,5 +1,6 @@
 import { FormEvent, useEffect, useState } from "react";
 import { Link, NavLink, Outlet, useNavigate } from "react-router-dom";
+import { Opening } from "./components/Opening";
 import { shortAddress } from "./format";
 import { PortfolioProvider, usePortfolio } from "./hooks/usePortfolio";
 
@@ -17,6 +18,8 @@ function Shell() {
     if (!address || address === "demo") return;
     setDraft(address);
   }, [address]);
+
+  if (!address) return <Opening />;
 
   function submit(event: FormEvent) {
     event.preventDefault();

@@ -19,19 +19,7 @@ export function Overview() {
     return portfolio.positions.filter((position) => !accountKey || position.account_key === accountKey);
   }, [portfolio, accountKey]);
 
-  if (!address) {
-    return (
-      <section className="empty">
-        <h1>Risk first. Balances second.</h1>
-        <p>
-          Blackout reads Aave v3 and Compound v3 on Ethereum, Arbitrum, Base, and Optimism. It shows which
-          lending account is closest to liquidation, how concentrated the collateral is, and what an ETH move
-          does to health.
-        </p>
-        <p>Paste a wallet, or open the demo book. The demo is a constructed portfolio, not a live wallet.</p>
-      </section>
-    );
-  }
+  if (!address) return null;
 
   if (loading && !portfolio) {
     return (
