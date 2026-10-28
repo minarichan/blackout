@@ -71,7 +71,7 @@ export function Overview() {
       ) : null}
       <header className="book-head">
         <p className="kicker">Cross-chain book</p>
-        <h1>{address === "demo" ? "Demo book" : shortAddress(address)}</h1>
+        <h1 className={address === "demo" ? "poster" : undefined}>{address === "demo" ? "Demo book" : shortAddress(address)}</h1>
       </header>
       <RiskSummary summary={portfolio.summary} />
       <p className="method">{portfolio.methodology}</p>

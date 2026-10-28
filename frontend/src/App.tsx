@@ -41,7 +41,7 @@ function Shell() {
         <div className="side-block">
           <p className="side-label">Book</p>
           <NavLink className={({ isActive }) => `watch-item ${isActive ? "active" : ""}`} to="/book/demo">
-            <span>Demo book</span>
+            <span className="poster">Demo book</span>
             <small>Fixture</small>
           </NavLink>
         </div>
@@ -97,7 +97,7 @@ function Shell() {
               Load
             </button>
           </form>
-          <button className="ghost" type="button" onClick={() => navigate("/book/demo")}>
+          <button className="ghost poster" type="button" onClick={() => navigate("/book/demo")}>
             Demo book
           </button>
           <button className="ghost" type="button" onClick={refresh} disabled={!address || loading}>

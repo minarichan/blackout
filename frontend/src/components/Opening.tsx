@@ -14,6 +14,8 @@ const DRIFT_MS = 12000;
 const HOLD_MS = 1600;
 const SCALE = 2.5;
 
+const VENUES = ["Aave v3", "Compound v3", "Ethereum", "Arbitrum", "Base", "Optimism"];
+
 function movingHealth(elapsed: number): number {
   const loop = DRIFT_MS + HOLD_MS;
   const t = elapsed % loop;
@@ -88,64 +90,73 @@ export function Opening() {
           <span>Concentration</span>
           <span>Stress</span>
         </nav>
-        <button type="button" className="landing-link" onClick={() => navigate("/book/demo")}>
+        <button type="button" className="landing-link poster" onClick={() => navigate("/book/demo")}>
           Demo book
         </button>
       </header>
 
-      <div className="landing-stage">
-        <div className="landing-copy">
+      <div className="bento">
+        <article className="tile tile-hero">
+          <p>Cross-chain lending</p>
           <h1>
-            Risk
+            Risk first.
             <br />
-            first.
-            <br />
-            One account
-            <br />
-            can fail.
+            One account can fail.
           </h1>
-          <div className="landing-actions">
-            <form onSubmit={submit}>
-              <input
-                value={draft}
-                onChange={(event) => setDraft(event.target.value)}
-                placeholder="0x wallet address"
-                aria-label="Wallet address"
-                spellCheck={false}
-              />
-              <button type="submit" disabled={!isWallet(draft)}>
-                Open
-              </button>
-            </form>
-            <button type="button" className="landing-link" onClick={() => navigate("/book/demo")}>
-              <i aria-hidden="true" />
-              Demo book
-            </button>
-          </div>
-        </div>
+        </article>
 
-        <div className="landing-panels">
-          <div className="landing-icons" aria-hidden="true">
-            <span className="chain-ethereum" />
-            <span className="chain-arbitrum" />
-            <span className="chain-base" />
-            <span className="chain-optimism" />
-          </div>
-          <div className="glass glass-book">
-            {accounts.map((account) => (
-              <div className="hf-row" key={account.chain}>
-                <span className={`chip chain-${account.chain}`}>{account.name}</span>
-                <span className="hf-track">
-                  <span className={tone(account.health)} style={{ width: `${(Math.min(account.health, SCALE) / SCALE) * 100}%` }} />
-                  <i style={{ left: `${(1 / SCALE) * 100}%` }} />
-                </span>
-                <span className={`hf-num ${tone(account.health)}`}>
-                  {account.chain === "arbitrum" && liquidatable ? "Liquidatable" : hf(account.health)}
-                </span>
-              </div>
+        <article className="tile tile-dark tile-stat">
+          <p>Arbitrum</p>
+          <strong className={tone(live)}>{liquidatable ? "Liq." : hf(live)}</strong>
+          <span>{liquidatable ? "Liquidatable" : "Health, moving"}</span>
+        </article>
+
+        <article className="tile tile-dark tile-venues">
+          <p>Read</p>
+          <ol>
+            {VENUES.map((venue, index) => (
+              <li key={venue}>
+                <span>{String(index + 1).padStart(2, "0")}</span>
+                {venue}
+              </li>
             ))}
-          </div>
-        </div>
+          </ol>
+        </article>
+
+        <article className="tile tile-dark tile-book">
+          <p>Four books</p>
+          {accounts.map((account) => (
+            <div className="hf-row" key={account.chain}>
+              <span className={`chip chain-${account.chain}`}>{account.name}</span>
+              <span className="hf-track">
+                <span className={tone(account.health)} style={{ width: `${(Math.min(account.health, SCALE) / SCALE) * 100}%` }} />
+                <i style={{ left: `${(1 / SCALE) * 100}%` }} />
+              </span>
+              <span className={`hf-num ${tone(account.health)}`}>
+                {account.chain === "arbitrum" && liquidatable ? "Liquidatable" : hf(account.health)}
+              </span>
+            </div>
+          ))}
+        </article>
+
+        <form className="tile tile-dark tile-open" onSubmit={submit}>
+          <p>Wallet</p>
+          <input
+            value={draft}
+            onChange={(event) => setDraft(event.target.value)}
+            placeholder="0x wallet address"
+            aria-label="Wallet address"
+            spellCheck={false}
+          />
+          <button type="submit" disabled={!isWallet(draft)}>
+            Open
+          </button>
+        </form>
+
+        <button type="button" className="tile tile-demo" onClick={() => navigate("/book/demo")}>
+          <p>Nothing is signed</p>
+          <strong className="poster">Demo book</strong>
+        </button>
       </div>
     </section>
   );
