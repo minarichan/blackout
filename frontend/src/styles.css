@@ -557,34 +557,41 @@ td.num, th.num { text-align: right; font-variant-numeric: tabular-nums; }
   padding: 12px 14px;
 }
 .tile-open button:disabled { opacity: 0.45; cursor: progress; }
+.tile-venues,
+.tile-book,
+.tile-open {
+  position: relative;
+  overflow: hidden;
+  color: #fff;
+  background: linear-gradient(180deg, rgba(16, 16, 16, 0.9) 0%, rgba(8, 8, 8, 0.8) 100%);
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.28),
+    0 10px 28px rgba(0, 0, 0, 0.18);
+  backdrop-filter: blur(28px) saturate(1.4);
+  -webkit-backdrop-filter: blur(28px) saturate(1.4);
+}
+.tile-venues,
+.tile-venues p,
+.tile-venues li,
+.tile-book,
+.tile-book p,
+.tile-book .hf-num,
+.tile-open,
+.tile-open p { color: #fff; }
 .tile-stat,
 .tile-demo {
   position: relative;
   overflow: hidden;
   color: var(--ink);
-  background: linear-gradient(180deg, rgba(255, 255, 255, 0.78) 0%, rgba(255, 255, 255, 0.42) 100%);
-  border: 1px solid rgba(255, 255, 255, 0.72);
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.86) 0%, rgba(255, 255, 255, 0.58) 100%);
+  border: 1px solid rgba(255, 255, 255, 0.8);
   box-shadow:
-    inset 0 1px 1px rgba(255, 255, 255, 0.95),
-    inset 0 -1px 1px rgba(255, 255, 255, 0.35),
-    0 10px 28px rgba(0, 0, 0, 0.12);
+    inset 0 1px 0 rgba(255, 255, 255, 0.95),
+    0 10px 28px rgba(0, 0, 0, 0.1);
   backdrop-filter: blur(28px) saturate(1.8);
   -webkit-backdrop-filter: blur(28px) saturate(1.8);
 }
-.tile-stat::before,
-.tile-demo::before {
-  content: "";
-  position: absolute;
-  left: 10%;
-  right: 10%;
-  top: 0;
-  height: 46%;
-  background: linear-gradient(180deg, rgba(255, 255, 255, 0.85), rgba(255, 255, 255, 0));
-  border-radius: 0 0 50% 50%;
-  pointer-events: none;
-}
-.tile-stat > *,
-.tile-demo > * { position: relative; z-index: 1; }
 .tile-stat p,
 .tile-stat span,
 .tile-stat strong,
@@ -598,9 +605,14 @@ td.num, th.num { text-align: right; font-variant-numeric: tabular-nums; }
   cursor: pointer;
 }
 .tile-demo strong { font-size: clamp(32px, 3vw, 48px); line-height: 0.9; }
-.tile-book .hf-track { background: #2a2a2a; }
-.tile-book .hf-track > i { background: var(--on-paper); }
-.tile-book .hf-num { color: var(--on-paper); }
+.tile-book .hf-track { background: rgba(255, 255, 255, 0.16); }
+.tile-book .hf-track > i { background: #fff; }
+.tile-open input {
+  background: rgba(255, 255, 255, 0.08);
+  color: #fff;
+  border-color: rgba(255, 255, 255, 0.22);
+}
+.tile-open input::placeholder { color: rgba(255, 255, 255, 0.55); }
 .instrument, .legs {
   background: var(--card);
   color: var(--on-paper);
